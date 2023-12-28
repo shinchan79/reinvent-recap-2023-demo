@@ -29,8 +29,6 @@ phases:
   build:
     commands:
       - ./inspector-sbomgen-latest/linux/amd64/inspector-sbomgen container --image $IMAGE_URL --outfile /tmp/sbom.json --quiet
-      # - aws inspector-scan scan-sbom --sbom file:///tmp/sbom.json --output-format INSPECTOR --query 'sbom.vulnerabilities'
-      # 重要度が critical または high の場合、出力する
       - aws inspector-scan scan-sbom --sbom file:///tmp/sbom.json --output-format INSPECTOR --query 'sbom.vulnerabilities[?severity==`critical` || severity==`high`]'
   post_build:
     commands:
