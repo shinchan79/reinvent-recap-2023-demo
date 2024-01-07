@@ -1,0 +1,127 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Vector engine for OpenSearch Service Serverless
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Parameters:
+          - SysName
+          - Env
+          - CollectionStandbyReplicas
+          - AossDataAccessPrincipalArn
+
+Parameters:
+  SysName:
+    Type: String
+    Default: 'demo'
+    Description: 'System name for this stack.'
+  Env:
+    Type: String
+    Default: 'reinvent'
+    Description: 'Environment for this stack.'
+  CollectionStandbyReplicas:
+    Type: String
+    Default: 'DISABLED'
+    Description: 'DISABLED is suitable for production environments. ENABLED is suitable for development environments.'
+    AllowedValues:
+      - 'DISABLED'
+      - 'ENABLED'
+  AossDataAccessPrincipalArn:
+    Type: String
+    Default: 'arn:aws:iam::123456789012:user/aoss-data-access-user'
+    Description: 'The ARN of the IAM user or role that has access to the data in the collection.'
+
+Resources:
+  AossCollection:
+    Type: 'AWS::OpenSearchServerless::Collection'
+    Properties:
+      Name: !Sub '${SysName}-${Env}-collection'
+      Type: VECTORSEARCH
+      StandbyReplicas: !Ref CollectionStandbyReplicas
+    DependsOn: AossEncryptionPolicy
+  AossEncryptionPolicy:
+    Type: 'AWS::OpenSearchServerless::SecurityPolicy'
+    Properties:
+      Name: !Sub '${SysName}-${Env}-encryption-policy'
+      Type: encryption
+      Policy: !Sub >-
+        {
+            "Rules":[
+                {
+                    "Resource":[
+                        "collection/${SysName}-${Env}-collection"
+                   ],
+                    "ResourceType": "collection"
+                }
+           ],
+            "AWSOwnedKey": true
+        }
+  AossNetworkPolicy:
+    Type: 'AWS::OpenSearchServerless::SecurityPolicy'
+    Properties:
+      Name: !Sub '${SysName}-${Env}-network-policy'
+      Type: network
+      Policy: !Sub >-
+       [
+            {
+                "Rules":[
+                    {
+                        "Resource":[
+                            "collection/${SysName}-${Env}-collection"
+                       ],
+                        "ResourceType": "dashboard"
+                    },
+                    {
+                        "Resource":[
+                            "collection/${SysName}-${Env}-collection"
+                       ],
+                        "ResourceType": "collection"
+                    }
+               ],
+                "AllowFromPublic": true
+            }
+       ]
+  AossDataAccessPolicy:
+    Type: 'AWS::OpenSearchServerless::AccessPolicy'
+    Properties:
+      Name: !Sub '${SysName}-${Env}-data-access-policy'
+      Type: data
+      Policy: !Sub >-
+       [
+            {
+                "Rules":[
+                    {
+                        "Resource":[
+                            "collection/${SysName}-${Env}-collection"
+                       ],
+                        "Permission":[
+                            "aoss:CreateCollectionItems",
+                            "aoss:UpdateCollectionItems",
+                            "aoss:DescribeCollectionItems"
+                       ],
+                        "ResourceType": "collection"
+                    },
+                    {
+                        "Resource":[
+                            "index/${SysName}-${Env}-collection/*"
+                       ],
+                        "Permission":[
+                            "aoss:CreateIndex",
+                            "aoss:UpdateIndex",
+                            "aoss:DescribeIndex",
+                            "aoss:ReadDocument",
+                            "aoss:WriteDocument"
+                       ],
+                        "ResourceType": "index"
+                    }
+               ],
+                "Principal":[
+                    "${AossDataAccessPrincipalArn}"
+               ],
+                "Description": ""
+            }
+       ]
+
+Outputs:
+  Endpoint:
+    Value: !GetAtt AossCollection.CollectionEndpoint
