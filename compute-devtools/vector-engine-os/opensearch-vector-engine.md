@@ -3,7 +3,7 @@ You can create OpenSearch serverless collection in the console that supported fo
 
 ![Create by console](./images/by-console.png)
 
-Use the template: 
+But in this demo, to be simple, we will use CloudFormation template. To create, use the template: 
 
 [opensearch-template.yaml](./opensearch-template.yaml)
 
