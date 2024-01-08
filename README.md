@@ -1,2 +1,2 @@
-# reinvent-recap-2023-security-session
-Demo code for security session
+# reinvent-recap-2023-demo
+Demo code my reivent recap 2023 (Viet-AWS - Hanoi edition)
