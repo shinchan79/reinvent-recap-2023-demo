@@ -1,0 +1,222 @@
+[
+  {
+    "analyzedAt": "2024-01-10T00:17:49.000Z",
+    "createdAt": "2024-01-07T15:20:30.000Z",
+    "id": "d15b2e21-c20f-4662-b1db-cc08bd88e36f",
+    "resource": "arn:aws:iam::xxxxxxxxxxxx:role/xxx-log-role",
+    "resourceType": "AWS::IAM::Role",
+    "resourceOwnerAccount": "xxxxxxxxxxxx",
+    "status": "ACTIVE",
+    "updatedAt": "2024-01-10T00:18:00.000Z",
+    "findingType": "UnusedIAMRole"
+  },
+  {
+    "analyzedAt": "2024-01-10T00:17:49.000Z",
+    "createdAt": "2024-01-07T15:20:30.000Z",
+    "id": "1e0b104b-4ffc-4d9c-8e7a-8e061a66f2f3",
+    "resource": "arn:aws:iam::xxxxxxxxxxxx:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AWSReadOnlyAccess_xxxxxxxx",
+    "resourceType": "AWS::IAM::Role",
+    "resourceOwnerAccount": "xxxxxxxxxxxx",
+    "status": "ACTIVE",
+    "updatedAt": "2024-01-10T00:18:00.000Z",
+    "findingType": "UnusedIAMRole"
+  },
+  {
+    "analyzedAt": "2024-01-10T00:17:49.000Z",
+    "createdAt": "2024-01-07T15:20:30.000Z",
+    "id": "d4db1e3a-7baf-463f-ac17-c6949ca0b0fd",
+    "resource": "arn:aws:iam::xxxxxxxxxxxx:role/allow-switch-xxxxxxxx",
+    "resourceType": "AWS::IAM::Role",
+    "resourceOwnerAccount": "xxxxxxxxxxxx",
+    "status": "ACTIVE",
+    "updatedAt": "2024-01-10T00:18:00.000Z",
+    "findingType": "UnusedIAMRole"
+  },
+  {
+    "analyzedAt": "2024-01-10T00:17:49.000Z",
+    "createdAt": "2024-01-07T15:20:30.000Z",
+    "id": "4f303d56-5c16-47ee-8e9c-9cf5d5ac6686",
+    "resource": "arn:aws:iam::xxxxxxxxxxxx:role/aws-controltower-AdministratorExecutionRole-xxxxxxxx",
+    "resourceType": "AWS::IAM::Role",
+    "resourceOwnerAccount": "xxxxxxxxxxxx",
+    "status": "ACTIVE",
+    "updatedAt": "2024-01-10T00:18:00.000Z",
+    "findingType": "UnusedIAMRole"
+  },
+  {
+    "analyzedAt": "2024-01-10T00:17:48.000Z",
+    "createdAt": "2024-01-07T15:20:41.000Z",
+    "id": "a32c436d-c712-4e3a-a383-015d860e3c1a",
+    "resource": "arn:aws:iam::xxxxxxxxxxxx:role/aws-controltower-ConfigRecorderRole-xxxxxxxx",
+    "resourceType": "AWS::IAM::Role",
+    "resourceOwnerAccount": "xxxxxxxxxxxx",
+    "status": "ACTIVE",
+    "updatedAt": "2024-01-10T00:17:49.000Z",
+    "findingType": "UnusedIAMRole"
+  },
+  {
+    "analyzedAt": "2024-01-10T00:17:48.000Z",
+    "createdAt": "2024-01-07T15:20:41.000Z",
+    "id": "0a6e54f9-8a59-416e-a81f-db8b55f636d2",
+    "resource": "arn:aws:iam::xxxxxxxxxxxx:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_Billing_xxxxxxxx",
+    "resourceType": "AWS::IAM::Role",
+    "resourceOwnerAccount": "xxxxxxxxxxxx",
+    "status": "ACTIVE",
+    "updatedAt": "2024-01-10T00:17:49.000Z",
+    "findingType": "UnusedIAMRole"
+  },
+  {
+    "analyzedAt": "2024-01-10T00:17:48.000Z",
+    "createdAt": "2024-01-07T15:20:41.000Z",
+    "id": "0f19c3e1-9761-4e6b-8f0e-a52bad023369",
+    "resource": "arn:aws:iam::xxxxxxxxxxxx:role/aws-controltower-ReadOnlyExecutionRole-xxxxxxxx",
+    "resourceType": "AWS::IAM::Role",
+    "resourceOwnerAccount": "xxxxxxxxxxxx",
+    "status": "ACTIVE",
+    "updatedAt": "2024-01-10T00:17:49.000Z",
+    "findingType": "UnusedIAMRole"
+  },
+  {
+    "analyzedAt": "2024-01-10T00:17:37.000Z",
+    "createdAt": "2024-01-07T15:20:40.000Z",
+    "id": "836c9b32-80b2-48b2-b7c5-2c0ae21f34e0",
+    "resource": "arn:aws:iam::xxxxxxxxxxxx:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AWSPowerUserAccess_xxxxxxxx",
+    "resourceType": "AWS::IAM::Role",
+    "resourceOwnerAccount": "xxxxxxxxxxxx",
+    "status": "ACTIVE",
+    "updatedAt": "2024-01-10T00:17:48.000Z",
+    "findingType": "UnusedIAMRole"
+  },
+  {
+    "analyzedAt": "2024-01-10T00:17:19.000Z",
+    "createdAt": "2024-01-07T15:20:19.000Z",
+    "id": "40a5bd85-07ed-480c-a940-60f57adba82b",
+    "resource": "arn:aws:iam::xxxxxxxxxxxx:role/aws-controltower-ForwardSnsNotificationRole-xxxxxxxx",
+    "resourceType": "AWS::IAM::Role",
+    "resourceOwnerAccount": "xxxxxxxxxxxx",
+    "status": "ACTIVE",
+    "updatedAt": "2024-01-10T00:17:36.000Z",
+    "findingType": "UnusedIAMRole"
+  },
+  {
+    "analyzedAt": "2024-01-09T22:52:42.000Z",
+    "createdAt": "2024-01-07T15:20:38.000Z",
+    "id": "0b552f05-1aaf-49ca-996e-4a17ac4f3b03",
+    "resource": "arn:aws:iam::yyyyyyyyyyyy:role/aws-controltower-AuditAdministratorRole-xxxxxxxx",
+    "resourceType": "AWS::IAM::Role",
+    "resourceOwnerAccount": "yyyyyyyyyyyy",
+    "status": "ACTIVE",
+    "updatedAt": "2024-01-09T22:52:55.000Z",
+    "findingType": "UnusedIAMRole"
+  },
+  {
+    "analyzedAt": "2024-01-09T22:52:41.000Z",
+    "createdAt": "2024-01-07T15:20:21.000Z",
+    "id": "e8bbe02a-170a-4125-b47f-69cab8373968",
+    "resource": "arn:aws:iam::yyyyyyyyyyyy:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AWSReadOnlyAccess_xxxxxxxx",
+    "resourceType": "AWS::IAM::Role",
+    "resourceOwnerAccount": "yyyyyyyyyyyy",
+    "status": "ACTIVE",
+    "updatedAt": "2024-01-09T22:52:43.000Z",
+    "findingType": "UnusedIAMRole"
+  },
+  {
+    "analyzedAt": "2024-01-09T22:52:41.000Z",
+    "createdAt": "2024-01-07T15:20:21.000Z",
+    "id": "711b2a58-286a-4246-8d68-8b28303fb204",
+    "resource": "arn:aws:iam::yyyyyyyyyyyy:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_Billing_xxxxxxxx",
+    "resourceType": "AWS::IAM::Role",
+    "resourceOwnerAccount": "yyyyyyyyyyyy",
+    "status": "ACTIVE",
+    "updatedAt": "2024-01-09T22:52:42.000Z",
+    "findingType": "UnusedIAMRole"
+  },
+  {
+    "analyzedAt": "2024-01-09T22:52:41.000Z",
+    "createdAt": "2024-01-07T15:20:21.000Z",
+    "id": "7a896034-6de8-4c1e-bb7f-3c2c9e1af42d",
+    "resource": "arn:aws:iam::yyyyyyyyyyyy:role/aws-controltower-ReadOnlyExecutionRole",
+    "resourceType": "AWS::IAM::Role",
+    "resourceOwnerAccount": "yyyyyyyyyyyy",
+    "status": "ACTIVE",
+    "updatedAt": "2024-01-09T22:52:42.000Z",
+    "findingType": "UnusedIAMRole"
+  },
+  {
+    "analyzedAt": "2024-01-09T22:52:40.000Z",
+    "createdAt": "2024-01-07T15:20:38.000Z",
+    "id": "7c47798f-e8a0-4c72-9b51-981aacf504e2",
+    "resource": "arn:aws:iam::yyyyyyyyyyyy:role/allow-switch-role",
+    "resourceType": "AWS::IAM::Role",
+    "resourceOwnerAccount": "yyyyyyyyyyyy",
+    "status": "ACTIVE",
+    "updatedAt": "2024-01-09T22:52:42.000Z",
+    "findingType": "UnusedIAMRole"
+  },
+  {
+    "analyzedAt": "2024-01-09T22:52:40.000Z",
+    "createdAt": "2024-01-07T15:20:39.000Z",
+    "id": "f62b9472-ae7a-4dca-a6d8-5dcc384cb331",
+    "resource": "arn:aws:iam::yyyyyyyyyyyy:role/aws-controltower-AuditReadOnlyRole",
+    "resourceType": "AWS::IAM::Role",
+    "resourceOwnerAccount": "yyyyyyyyyyyy",
+    "status": "ACTIVE",
+    "updatedAt": "2024-01-09T22:52:42.000Z",
+    "findingType": "UnusedIAMRole"
+  },
+  {
+    "analyzedAt": "2024-01-09T22:52:41.000Z",
+    "createdAt": "2024-01-07T15:20:21.000Z",
+    "id": "1c45b3d0-6d34-4641-a3a8-160c55c7c940",
+    "resource": "arn:aws:iam::yyyyyyyyyyyy:role/aws-controltower-AdministratorExecutionRole",
+    "resourceType": "AWS::IAM::Role",
+    "resourceOwnerAccount": "yyyyyyyyyyyy",
+    "status": "ACTIVE",
+    "updatedAt": "2024-01-09T22:52:42.000Z",
+    "findingType": "UnusedIAMRole"
+  },
+  {
+    "analyzedAt": "2024-01-09T22:52:40.000Z",
+    "createdAt": "2024-01-07T15:20:38.000Z",
+    "id": "0c6ae970-23c4-4c1e-b18c-9cfbb7c1475f",
+    "resource": "arn:aws:iam::yyyyyyyyyyyy:role/aws-controltower-ConfigRecorderRole",
+    "resourceType": "AWS::IAM::Role",
+    "resourceOwnerAccount": "yyyyyyyyyyyy",
+    "status": "ACTIVE",
+    "updatedAt": "2024-01-09T22:52:41.000Z",
+    "findingType": "UnusedIAMRole"
+  },
+  {
+    "analyzedAt": "2024-01-09T22:52:22.000Z",
+    "createdAt": "2024-01-07T15:20:20.000Z",
+    "id": "c2f0246c-5ad7-43e6-8a31-242e8e8374e4",
+    "resource": "arn:aws:iam::yyyyyyyyyyyy:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AWSPowerUserAccess_e58f345e70fa6bd9",
+    "resourceType": "AWS::IAM::Role",
+    "resourceOwnerAccount": "yyyyyyyyyyyy",
+    "status": "ACTIVE",
+    "updatedAt": "2024-01-09T22:52:41.000Z",
+    "findingType": "UnusedIAMRole"
+  },
+  {
+    "analyzedAt": "2024-01-09T22:52:22.000Z",
+    "createdAt": "2024-01-07T15:20:20.000Z",
+    "id": "64fb1a72-624a-427b-bb9a-dee7e56d469e",
+    "resource": "arn:aws:iam::yyyyyyyyyyyy:role/dev-audit-role",
+    "resourceType": "AWS::IAM::Role",
+    "resourceOwnerAccount": "yyyyyyyyyyyy",
+    "status": "ACTIVE",
+    "updatedAt": "2024-01-09T22:52:40.000Z",
+    "findingType": "UnusedIAMRole"
+  },
+  {
+    "analyzedAt": "2024-01-09T22:40:57.000Z",
+    "createdAt": "2024-01-07T15:20:51.000Z",
+    "id": "ee727ee9-1536-42f3-b605-c8d87604ff86",
+    "resource": "arn:aws:iam::zzzzzzzzzzzz:role/service-role/test-cognito-sms-allow-role",
+    "resourceType": "AWS::IAM::Role",
+    "resourceOwnerAccount": "zzzzzzzzzzzz",
+    "status": "ACTIVE",
+    "updatedAt": "2024-01-09T22:41:19.000Z",
+    "findingType": "UnusedIAMRole"
+  }
+]
