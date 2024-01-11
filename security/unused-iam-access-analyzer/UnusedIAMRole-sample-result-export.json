@@ -190,7 +190,7 @@
     "analyzedAt": "2024-01-09T22:52:22.000Z",
     "createdAt": "2024-01-07T15:20:20.000Z",
     "id": "c2f0246c-5ad7-43e6-8a31-242e8e8374e4",
-    "resource": "arn:aws:iam::yyyyyyyyyyyy:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AWSPowerUserAccess_e58f345e70fa6bd9",
+    "resource": "arn:aws:iam::yyyyyyyyyyyy:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AWSPowerUserAccess_xxx",
     "resourceType": "AWS::IAM::Role",
     "resourceOwnerAccount": "yyyyyyyyyyyy",
     "status": "ACTIVE",
