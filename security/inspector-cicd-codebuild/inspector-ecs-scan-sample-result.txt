@@ -1,0 +1,1113 @@
+[Container] 2024/01/11 12:23:59.300631 Running command ./aws/install --bin-dir /root/.pyenv/shims --install-dir /usr/local/aws-cli --update
+You can now run: /root/.pyenv/shims/aws --version
+[Container] 2024/01/11 12:24:00.208054 Running command aws --version
+aws-cli/2.15.9 Python/3.11.6 Linux/4.14.291-218.527.amzn2.x86_64 exec-env/AWS_ECS_EC2 exe/x86_64.amzn.2023 prompt/off
+[Container] 2024/01/11 12:24:00.734294 Running command echo Install Amazon Inspector SBOM Generator...
+Install Amazon Inspector SBOM Generator...
+[Container] 2024/01/11 12:24:00.755753 Running command curl -O https://amazon-inspector-sbomgen.s3.amazonaws.com/latest/linux/amd64/inspector-sbomgen.zip
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0 6219k    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
+  4 6219k    4  254k    0     0   119k      0  0:00:52  0:00:02  0:00:50  119k
+ 59 6219k   59 3730k    0     0  1195k      0  0:00:05  0:00:03  0:00:02 1194k
+100 6219k  100 6219k    0     0  1988k      0  0:00:03  0:00:03 --:--:-- 1988k
+[Container] 2024/01/11 12:24:03.915323 Running command unzip inspector-sbomgen.zip
+Archive:  inspector-sbomgen.zip
+   creating: inspector-sbomgen-1.0.0/linux/amd64/
+   creating: inspector-sbomgen-1.0.0/linux/amd64/licenses/
+  inflating: inspector-sbomgen-1.0.0/linux/amd64/licenses/3rd-party-licenses.csv  
+  inflating: inspector-sbomgen-1.0.0/linux/amd64/licenses/bsd-2-clause.txt  
+  inflating: inspector-sbomgen-1.0.0/linux/amd64/licenses/Apache-License-2.0.txt  
+  inflating: inspector-sbomgen-1.0.0/linux/amd64/licenses/MIT.txt  
+  inflating: inspector-sbomgen-1.0.0/linux/amd64/licenses/bsd-3-clause.txt  
+  inflating: inspector-sbomgen-1.0.0/linux/amd64/inspector-sbomgen  
+  inflating: inspector-sbomgen-1.0.0/linux/amd64/sbom.json  
+  inflating: inspector-sbomgen-1.0.0/linux/amd64/checksum.txt  
+  inflating: inspector-sbomgen-1.0.0/linux/amd64/README.txt  
+  inflating: inspector-sbomgen-1.0.0/linux/amd64/LICENSE.txt  
+[Container] 2024/01/11 12:24:04.061566 Running command mv inspector-sbomgen-* inspector-sbomgen-latest
+[Container] 2024/01/11 12:24:04.113215 Running command chmod +x inspector-sbomgen-latest/linux/amd64/inspector-sbomgen
+[Container] 2024/01/11 12:24:04.129612 Running command ./inspector-sbomgen-latest/linux/amd64/inspector-sbomgen --version
+1.0.0
+[Container] 2024/01/11 12:24:04.240235 Phase complete: INSTALL State: SUCCEEDED
+[Container] 2024/01/11 12:24:04.240367 Phase context status code:  Message: 
+[Container] 2024/01/11 12:24:04.276304 Entering phase PRE_BUILD
+[Container] 2024/01/11 12:24:04.276703 Running command echo Logging in to Amazon ECR...
+Logging in to Amazon ECR...
+[Container] 2024/01/11 12:24:04.312656 Running command aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+WARNING! Your password will be stored unencrypted in /root/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+Login Succeeded
+[Container] 2024/01/11 12:24:04.968516 Phase complete: PRE_BUILD State: SUCCEEDED
+[Container] 2024/01/11 12:24:04.968534 Phase context status code:  Message: 
+[Container] 2024/01/11 12:24:05.003213 Entering phase BUILD
+[Container] 2024/01/11 12:24:05.003661 Running command ./inspector-sbomgen-latest/linux/amd64/inspector-sbomgen container --image $IMAGE_URL --outfile /tmp/sbom.json --quiet
+[Container] 2024/01/11 12:24:07.790540 Running command aws inspector-scan scan-sbom --sbom file:///tmp/sbom.json --output-format INSPECTOR --query 'sbom.vulnerabilities[?severity==`critical` || severity==`high`]'
+[
+    {
+        "severity": "high",
+        "related": [
+            "ALAS2023-2023-406"
+        ],
+        "references": [
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=0df40630850fb2740e6be6890bb905d3fc623b2d",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=5f69f5c65e483928c4b28ed16af6e5742929f1ee",
+            "https://www.openssl.org/news/secadv/20231024.txt",
+            "https://www.debian.org/security/2023/dsa-5532"
+        ],
+        "created": "2023-10-25T18:17:43Z",
+        "description": "Issue summary: A bug has been identified in the processing of key and\ninitialisation vector (IV) lengths.  This can lead to potential truncation\nor overruns during the initialisation of some symmetric ciphers.\n\nImpact summary: A truncation in the IV can result in non-uniqueness,\nwhich could result in loss of confidentiality for some cipher modes.\n\nWhen calling EVP_EncryptInit_ex2(), EVP_DecryptInit_ex2() or\nEVP_CipherInit_ex2() the provided OSSL_PARAM array is processed after\nthe key and IV have been established.  Any alterations to the key length,\nvia the \"keylen\" parameter or the IV length, via the \"ivlen\" parameter,\nwithin the OSSL_PARAM array will not take effect as intended, potentially\ncausing truncation or overreading of these values.  The following ciphers\nand cipher modes are impacted: RC2, RC4, RC5, CCM, GCM and OCB.\n\nFor the CCM, GCM and OCB cipher modes, truncation of the IV can result in\nloss of confidentiality.  For example, when following NIST's SP 800-38D\nsection 8.2.1 guidance for constructing a deterministic IV for AES in\nGCM mode, truncation of the counter portion could lead to IV reuse.\n\nBoth truncations and overruns of the key and overruns of the IV will\nproduce incorrect results and could, in some cases, trigger a memory\nexception.  However, these issues are not currently assessed as security\ncritical.\n\nChanging the key and/or IV lengths is not considered to be a common operation\nand the vulnerable API was recently introduced. Furthermore it is likely that\napplication developers will have spotted this problem during testing since\ndecryption would fail unless both peers in the communication were similarly\nvulnerable. For these reasons we expect the probability of an application being\nvulnerable to this to be quite low. However if an application is vulnerable then\nthis issue is considered very serious. For these reasons we have assessed this\nissue as Moderate severity overall.\n\nThe OpenSSL SSL/TLS implementation is not affected by this issue.\n\nThe OpenSSL 3.0 and 3.1 FIPS providers are not affected by this because\nthe issue lies outside of the FIPS provider boundary.\n\nOpenSSL 3.1 and 3.0 are vulnerable to this issue.",
+        "affects": [
+            {
+                "fixed_version": "1:3.0.8-1.amzn2023.0.9",
+                "installed_version": "pkg:rpm/amazon/openssl-libs@3.0.8-1.amzn2023.0.1?arch=x86_64&distro=2023&epoch=1"
+            },
+            {
+                "fixed_version": "1:3.0.8-1.amzn2023.0.9",
+                "installed_version": "pkg:rpm/amazon/openssl@3.0.8-1.amzn2023.0.1?arch=x86_64&distro=2023&epoch=1"
+            }
+        ],
+        "id": "CVE-2023-5363",
+        "source": "https://nvd.nist.gov/vuln/detail/CVE-2023-5363",
+        "updated": "2023-11-09T13:55:31Z",
+        "properties": {
+            "epss": null,
+            "cvss": [
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 7.5,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+                    "source": "NVD"
+                },
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 7.5,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+                    "source": "Amazon Linux"
+                }
+            ]
+        }
+    },
+    {
+        "severity": "high",
+        "related": [
+            "ALAS2023-2023-281"
+        ],
+        "references": [
+            "https://alas.aws.amazon.com/AL2/ALAS-2023-2203.html",
+            "https://alas.aws.amazon.com/ALAS-2023-1795.html",
+            "https://alas.aws.amazon.com/AL2023/ALAS-2023-281.html"
+        ],
+        "created": "2023-08-03T00:00:00Z",
+        "description": "An initial fix in Amazon Linux ca-certificates package relating to CVE-2022-23491 did not properly remove root certificates from TrustCor from the root store.",
+        "affects": [
+            {
+                "fixed_version": "0:2023.2.60-1.0.amzn2023.0.2",
+                "installed_version": "pkg:rpm/amazon/ca-certificates@2023.2.60-1.0.amzn2023.0.1?arch=noarch&distro=2023&epoch=0"
+            }
+        ],
+        "id": "CVE-2023-32803",
+        "source": "https://alas.aws.amazon.com/cve/json/v1/CVE-2023-32803.json",
+        "updated": "2023-08-03T00:00:00Z",
+        "properties": {
+            "cvss": [
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 7.5,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+                    "source": "Amazon Linux"
+                }
+            ]
+        }
+    },
+    {
+        "severity": "critical",
+        "related": [
+            "ALAS2023-2023-410"
+        ],
+        "references": [
+            "https://chromium.googlesource.com/chromium/src/+/d709fb23806858847131027da95ef4c548813356",
+            "https://pypi.org/project/pyminizip/",
+            "https://lists.debian.org/debian-lts-announce/2023/11/msg00026.html",
+            "https://chromium.googlesource.com/chromium/src/+/de29dd6c7151d3cd37cb4cf0036800ddfb1d8b61"
+        ],
+        "created": "2023-10-14T02:15:09Z",
+        "description": "MiniZip in zlib through 1.3 has an integer overflow and resultant heap-based buffer overflow in zipOpenNewFileInZip4_64 via a long filename, comment, or extra field. NOTE: MiniZip is not a supported part of the zlib product. NOTE: pyminizip through 0.2.6 is also vulnerable because it bundles an affected zlib version, and exposes the applicable MiniZip code through its compress API.",
+        "affects": [
+            {
+                "fixed_version": "0:1.2.11-33.amzn2023.0.5",
+                "installed_version": "pkg:rpm/amazon/zlib@1.2.11-33.amzn2023.0.4?arch=x86_64&distro=2023&epoch=0"
+            }
+        ],
+        "id": "CVE-2023-45853",
+        "source": "https://nvd.nist.gov/vuln/detail/CVE-2023-45853",
+        "updated": "2023-12-16T23:15:40Z",
+        "properties": {
+            "epss": 0.00122,
+            "cwes": [
+                190
+            ],
+            "cvss": [
+                {
+                    "severity": "critical",
+                    "cvss_3_base_score": 9.8000001907,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                    "source": "NVD"
+                },
+                {
+                    "severity": "medium",
+                    "cvss_3_base_score": 5.3000001907,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:L",
+                    "source": "Amazon Linux"
+                }
+            ]
+        }
+    },
+    {
+        "severity": "high",
+        "related": [
+            "ALAS2023-2023-225"
+        ],
+        "references": [
+            "https://gitlab.gnome.org/GNOME/glib/-/issues/2794",
+            "https://access.redhat.com/security/cve/CVE-2023-29499",
+            "https://bugzilla.redhat.com/show_bug.cgi?id=2211828",
+            "https://lists.debian.org/debian-lts-announce/2023/09/msg00030.html",
+            "https://security.gentoo.org/glsa/202311-18"
+        ],
+        "created": "2023-09-14T20:15:09Z",
+        "description": "A flaw was found in GLib. GVariant deserialization fails to validate that the input conforms to the expected format, leading to denial of service.",
+        "affects": [
+            {
+                "fixed_version": "0:2.74.7-688.amzn2023.0.1",
+                "installed_version": "pkg:rpm/amazon/glib2@2.73.2-680.amzn2023.0.3?arch=x86_64&distro=2023&epoch=0"
+            }
+        ],
+        "id": "CVE-2023-29499",
+        "source": "https://nvd.nist.gov/vuln/detail/CVE-2023-29499",
+        "updated": "2023-11-27T14:15:07Z",
+        "properties": {
+            "epss": 0.00103,
+            "cwes": [
+                400
+            ],
+            "cvss": [
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 7.5,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                    "source": "NVD"
+                },
+                {
+                    "severity": "medium",
+                    "cvss_3_base_score": 5.5,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+                    "source": "Amazon Linux"
+                }
+            ]
+        }
+    },
+    {
+        "severity": "high",
+        "related": [
+            "ALAS2023-2023-368"
+        ],
+        "references": [
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/M6KGKB2JNZVT276JYSKI6FV2VFJUGDOJ/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5DCZMYODALBLVOXVJEN2LF2MLANEYL4F/",
+            "https://hackerone.com/reports/2072338",
+            "https://security.gentoo.org/glsa/202310-12",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/TEAWTYHC3RT6ZRS5OZRHLAIENVN6CCIS/"
+        ],
+        "created": "2023-09-15T04:15:10Z",
+        "description": "When curl retrieves an HTTP response, it stores the incoming headers so that\nthey can be accessed later via the libcurl headers API.\n\nHowever, curl did not have a limit in how many or how large headers it would\naccept in a response, allowing a malicious server to stream an endless series\nof headers and eventually cause curl to run out of heap memory.",
+        "affects": [
+            {
+                "fixed_version": "0:8.3.0-1.amzn2023.0.1",
+                "installed_version": "pkg:rpm/amazon/curl-minimal@7.88.1-1.amzn2023.0.1?arch=x86_64&distro=2023&epoch=0"
+            },
+            {
+                "fixed_version": "0:8.3.0-1.amzn2023.0.1",
+                "installed_version": "pkg:rpm/amazon/libcurl-minimal@7.88.1-1.amzn2023.0.1?arch=x86_64&distro=2023&epoch=0"
+            },
+            {
+                "fixed_version": "0:8.3.0-1.amzn2023.0.1",
+                "installed_version": "pkg:rpm/amazon/curl@7.88.1-1.amzn2023.0.1?arch=x86_64&distro=2023&epoch=0"
+            }
+        ],
+        "id": "CVE-2023-38039",
+        "source": "https://nvd.nist.gov/vuln/detail/CVE-2023-38039",
+        "updated": "2023-12-12T21:15:08Z",
+        "properties": {
+            "epss": 0.00108,
+            "cwes": [
+                770
+            ],
+            "cvss": [
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 7.5,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                    "source": "NVD"
+                },
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 7.5,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                    "source": "Amazon Linux"
+                }
+            ]
+        }
+    },
+    {
+        "severity": "high",
+        "related": [
+            "ALAS2023-2023-392"
+        ],
+        "references": [
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/CLB4TW7KALB3EEQWNWCN7OUIWWVWWCG2/",
+            "https://bugzilla.redhat.com/show_bug.cgi?id=2242803",
+            "https://msrc.microsoft.com/blog/2023/10/microsoft-response-to-distributed-denial-of-service-ddos-attacks-against-http/2/",
+            "https://groups.google.com/g/golang-announce/c/iNNxDTCjZvo",
+            "https://blog.cloudflare.com/technical-breakdown-http2-rapid-reset-ddos-attack/",
+            "https://www.debian.org/security/2023/dsa-5522",
+            "https://www.debian.org/security/2023/dsa-5521",
+            "https://www.cisa.gov/news-events/alerts/2023/10/10/http2-rapid-reset-vulnerability-cve-2023-44487",
+            "https://lists.debian.org/debian-lts-announce/2023/11/msg00001.html",
+            "https://aws.amazon.com/security/security-bulletins/AWS-2023-011/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/LNMZJCDHGLJJLXO4OXWJMTVQRNWOC7UL/",
+            "https://blog.qualys.com/vulnerabilities-threat-research/2023/10/10/cve-2023-44487-http-2-rapid-reset-attack",
+            "https://netty.io/news/2023/10/10/4-1-100-Final.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/VHUHTSXLXGXS7JYKBXTA3VINUPHTNGVU/",
+            "https://security.gentoo.org/glsa/202311-09",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HT7T2R4MQKLIF4ODV4BDLPARWFPCJ5CZ/",
+            "https://ubuntu.com/security/CVE-2023-44487",
+            "https://tomcat.apache.org/security-10.html",
+            "https://lists.debian.org/debian-lts-announce/2023/10/msg00023.html",
+            "https://bugzilla.suse.com/show_bug.cgi?id=1216123",
+            "https://lists.debian.org/debian-lts-announce/2023/10/msg00020.html",
+            "https://www.debian.org/security/2023/dsa-5558",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/WLPRQ5TWUQQXYWBJM7ECYDAIL2YVKIUH/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/LKYHSZQFDNR7RSA7LHVLLIAQMVYCUGBG/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/WE2I52RHNNU42PX6NZ2RBUHSFFJ2LVZX/",
+            "https://lists.debian.org/debian-lts-announce/2023/10/msg00047.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2MBEPPC36UBVOZZNAXFHKLFGSLCMN5LI/",
+            "https://lists.apache.org/thread/5py8h42mxfsn8l1wy6o41xwhsjlsd87q",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/KSEGD2IWKNUO3DWY4KQGUQM5BISRWHQE/",
+            "https://openssf.org/blog/2023/10/10/http-2-rapid-reset-vulnerability-highlights-need-for-rapid-response/",
+            "https://www.debian.org/security/2023/dsa-5540",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/3N4NJ7FR4X4FPZUGNTQAPSTVB2HB2Y4A/",
+            "https://cgit.freebsd.org/ports/commit/?id=c64c329c2c1752f46b73e3e6ce9f4329be6629f9",
+            "https://access.redhat.com/security/cve/cve-2023-44487",
+            "https://lists.debian.org/debian-lts-announce/2023/11/msg00012.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZKQSIKIAT5TJ3WSLU3RDBQ35YX4GY4V3/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/VSRDIV77HNKUSM7SJC5BKE5JSHLHU2NK/",
+            "https://www.debian.org/security/2023/dsa-5549",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JIZSEFC3YKCGABA2BZW6ZJRMDZJMB7PJ/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZB43REMKRQR62NJEI7I5NQ4FSXNLBKRT/",
+            "https://mailman.nginx.org/pipermail/nginx-devel/2023-October/S36Q5HBXR7CAIMPLLPRSSSYR4PCMWILK.html",
+            "https://lists.debian.org/debian-lts-announce/2023/10/msg00045.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/E72T67UPDRXHIDLO3OROR25YAMN4GGW5/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XFOIBB4YFICHDM7IBOP7PWXW3FX4HLL2/",
+            "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2023-44487",
+            "https://www.debian.org/security/2023/dsa-5570",
+            "https://forums.swift.org/t/swift-nio-http2-security-update-cve-2023-44487-http-2-dos/67764",
+            "https://cloud.google.com/blog/products/identity-security/google-cloud-mitigated-largest-ddos-attack-peaking-above-398-million-rps/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BFQD3KUEMFBHPAPBGLWQC34L4OWL5HAZ/",
+            "https://martinthomson.github.io/h2-stream-limits/draft-thomson-httpbis-h2-stream-limits.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZLU6U2R2IC2K64NDPNMV55AUAO65MAF4/",
+            "https://my.f5.com/manage/s/article/K000137106",
+            "https://cloud.google.com/blog/products/identity-security/how-it-works-the-novel-http2-rapid-reset-ddos-attack",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/X6QXN4ORIVF6XBW4WWFE7VNPVC74S45Y/",
+            "https://blog.cloudflare.com/zero-day-rapid-reset-http2-record-breaking-ddos-attack/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/FNA62Q767CFAFHBCDKYNPBMZWB7TWYVU/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JMEXY22BFG5Q64HQCM5CK2Q7KDKVV4TY/",
+            "https://lists.w3.org/Archives/Public/ietf-http-wg/2023OctDec/0025.html",
+            "https://lists.debian.org/debian-lts-announce/2023/10/msg00024.html"
+        ],
+        "created": "2023-10-10T14:15:10Z",
+        "description": "The HTTP/2 protocol allows a denial of service (server resource consumption) because request cancellation can reset many streams quickly, as exploited in the wild in August through October 2023.",
+        "affects": [
+            {
+                "fixed_version": "0:1.57.0-1.amzn2023.0.1",
+                "installed_version": "pkg:rpm/amazon/nghttp2@1.51.0-1.amzn2023?arch=x86_64&distro=2023&epoch=0"
+            },
+            {
+                "fixed_version": "0:1.57.0-1.amzn2023.0.1",
+                "installed_version": "pkg:rpm/amazon/libnghttp2@1.51.0-1.amzn2023?arch=x86_64&distro=2023&epoch=0"
+            }
+        ],
+        "id": "CVE-2023-44487",
+        "source": "https://nvd.nist.gov/vuln/detail/CVE-2023-44487",
+        "updated": "2023-12-20T17:55:36Z",
+        "properties": {
+            "cisa_kev_date_added": "2023-10-10T00:00:00Z",
+            "exploit_available": true,
+            "epss": 0.6448500156,
+            "cisa_kev_date_due": "2023-10-31T00:00:00Z",
+            "cwes": [
+                400
+            ],
+            "exploit_last_seen_in_public": "2024-01-10T00:58:24Z",
+            "cvss": [
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 7.5,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                    "source": "NVD"
+                },
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 7.5,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                    "source": "Amazon Linux"
+                }
+            ]
+        }
+    },
+    {
+        "severity": "high",
+        "related": [
+            "ALAS2023-2023-181"
+        ],
+        "references": [
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=2dcd4f1e3115f38cefa43e3efbe9b801c27e642e",
+            "https://lists.debian.org/debian-lts-announce/2023/06/msg00011.html",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=2017771e2db3e2b96f89bbe8766c3209f6a99545",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=959c59c7a0164117e7f8366466a32bb1f8d77ff1",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=879f7080d7e141f415c79eaa3a8ac4a3dad0348b",
+            "https://www.openssl.org/news/secadv/20230322.txt",
+            "https://www.debian.org/security/2023/dsa-5417"
+        ],
+        "created": "2023-03-22T17:15:13Z",
+        "description": "A security vulnerability has been identified in all supported versions\n\nof OpenSSL related to the verification of X.509 certificate chains\nthat include policy constraints.  Attackers may be able to exploit this\nvulnerability by creating a malicious certificate chain that triggers\nexponential use of computational resources, leading to a denial-of-service\n(DoS) attack on affected systems.\n\nPolicy processing is disabled by default but can be enabled by passing\nthe `-policy' argument to the command line utilities or by calling the\n`X509_VERIFY_PARAM_set1_policies()' function.",
+        "affects": [
+            {
+                "fixed_version": "1:3.0.8-1.amzn2023.0.2",
+                "installed_version": "pkg:rpm/amazon/openssl-libs@3.0.8-1.amzn2023.0.1?arch=x86_64&distro=2023&epoch=1"
+            },
+            {
+                "fixed_version": "1:3.0.8-1.amzn2023.0.2",
+                "installed_version": "pkg:rpm/amazon/openssl@3.0.8-1.amzn2023.0.1?arch=x86_64&distro=2023&epoch=1"
+            }
+        ],
+        "id": "CVE-2023-0464",
+        "source": "https://nvd.nist.gov/vuln/detail/CVE-2023-0464",
+        "updated": "2023-11-09T13:15:07Z",
+        "properties": {
+            "exploit_available": true,
+            "epss": 0.0021899999,
+            "cwes": [
+                295
+            ],
+            "exploit_last_seen_in_public": "2024-01-09T23:37:27Z",
+            "cvss": [
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 7.5,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                    "source": "NVD"
+                },
+                {
+                    "severity": "medium",
+                    "cvss_3_base_score": 5.3000001907,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+                    "source": "Amazon Linux"
+                }
+            ]
+        }
+    },
+    {
+        "severity": "critical",
+        "related": [
+            "ALAS2023-2023-377"
+        ],
+        "references": [
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/OGMXNRNSJ4ETDK6FRNU3J7SABXPWCHSQ/"
+        ],
+        "created": "2023-10-18T04:15:11Z",
+        "description": "This flaw makes curl overflow a heap based buffer in the SOCKS5 proxy\nhandshake.\n\nWhen curl is asked to pass along the host name to the SOCKS5 proxy to allow\nthat to resolve the address instead of it getting done by curl itself, the\nmaximum length that host name can be is 255 bytes.\n\nIf the host name is detected to be longer, curl switches to local name\nresolving and instead passes on the resolved address only. Due to this bug,\nthe local variable that means \"let the host resolve the name\" could get the\nwrong value during a slow SOCKS5 handshake, and contrary to the intention,\ncopy the too long host name to the target buffer instead of copying just the\nresolved address there.\n\nThe target buffer being a heap based buffer, and the host name coming from the\nURL that curl has been told to operate with.\n",
+        "affects": [
+            {
+                "fixed_version": "0:8.3.0-1.amzn2023.0.2",
+                "installed_version": "pkg:rpm/amazon/curl-minimal@7.88.1-1.amzn2023.0.1?arch=x86_64&distro=2023&epoch=0"
+            },
+            {
+                "fixed_version": "0:8.3.0-1.amzn2023.0.2",
+                "installed_version": "pkg:rpm/amazon/libcurl-minimal@7.88.1-1.amzn2023.0.1?arch=x86_64&distro=2023&epoch=0"
+            },
+            {
+                "fixed_version": "0:8.3.0-1.amzn2023.0.2",
+                "installed_version": "pkg:rpm/amazon/curl@7.88.1-1.amzn2023.0.1?arch=x86_64&distro=2023&epoch=0"
+            }
+        ],
+        "id": "CVE-2023-38545",
+        "source": "https://nvd.nist.gov/vuln/detail/CVE-2023-38545",
+        "updated": "2023-11-16T02:15:26Z",
+        "properties": {
+            "exploit_available": true,
+            "epss": null,
+            "cwes": [
+                787
+            ],
+            "exploit_last_seen_in_public": "2024-01-10T00:37:07Z",
+            "cvss": [
+                {
+                    "severity": "critical",
+                    "cvss_3_base_score": 9.8000001907,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                    "source": "NVD"
+                },
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 8.1000003815,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                    "source": "Amazon Linux"
+                }
+            ]
+        }
+    },
+    {
+        "severity": "critical",
+        "related": [
+            "ALAS2023-2023-297"
+        ],
+        "references": [
+            "https://groups.google.com/a/mozilla.org/g/dev-security-policy/c/C-HrP1SEq1A",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5EX6NG7WUFNUKGFHLM35KHHU3GAKXRTG/"
+        ],
+        "created": "2023-07-25T21:15:10Z",
+        "description": "Certifi is a curated collection of Root Certificates for validating the trustworthiness of SSL certificates while verifying the identity of TLS hosts. Certifi prior to version 2023.07.22 recognizes \"e-Tugra\" root certificates. e-Tugra's root certificates were subject to an investigation prompted by reporting of security issues in their systems. Certifi 2023.07.22 removes root certificates from \"e-Tugra\" from the root store.",
+        "affects": [
+            {
+                "fixed_version": "0:2023.2.60-1.0.amzn2023.0.3",
+                "installed_version": "pkg:rpm/amazon/ca-certificates@2023.2.60-1.0.amzn2023.0.1?arch=noarch&distro=2023&epoch=0"
+            }
+        ],
+        "id": "CVE-2023-37920",
+        "source": "https://nvd.nist.gov/vuln/detail/CVE-2023-37920",
+        "updated": "2023-08-12T06:16:31Z",
+        "properties": {
+            "epss": null,
+            "cwes": [
+                345
+            ],
+            "cvss": [
+                {
+                    "severity": "critical",
+                    "cvss_3_base_score": 9.8000001907,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                    "source": "NVD"
+                },
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 7.5,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+                    "source": "Amazon Linux"
+                }
+            ]
+        }
+    },
+    {
+        "severity": "high",
+        "related": [
+            "ALAS2023-2023-278"
+        ],
+        "created": "2023-07-13T21:15:08Z",
+        "description": "Envoy is a cloud-native high-performance edge/middle/service proxy. Envoy’s HTTP/2 codec may leak a header map and bookkeeping structures upon receiving `RST_STREAM` immediately followed by the `GOAWAY` frames from an upstream server. In nghttp2, cleanup of pending requests due to receipt of the `GOAWAY` frame skips de-allocation of the bookkeeping structure and pending compressed header. The error return [code path] is taken if connection is already marked for not sending more requests due to `GOAWAY` frame. The clean-up code is right after the return statement, causing memory leak. Denial of service through memory exhaustion. This vulnerability was patched in versions(s) 1.26.3, 1.25.8, 1.24.9, 1.23.11.",
+        "affects": [
+            {
+                "fixed_version": "0:1.55.1-1.amzn2023.0.1",
+                "installed_version": "pkg:rpm/amazon/nghttp2@1.51.0-1.amzn2023?arch=x86_64&distro=2023&epoch=0"
+            },
+            {
+                "fixed_version": "0:1.55.1-1.amzn2023.0.1",
+                "installed_version": "pkg:rpm/amazon/libnghttp2@1.51.0-1.amzn2023?arch=x86_64&distro=2023&epoch=0"
+            }
+        ],
+        "id": "CVE-2023-35945",
+        "source": "https://nvd.nist.gov/vuln/detail/CVE-2023-35945",
+        "updated": "2023-10-24T17:26:30Z",
+        "properties": {
+            "exploit_available": true,
+            "epss": null,
+            "cwes": [
+                400,
+                459
+            ],
+            "exploit_last_seen_in_public": "2024-01-09T04:34:01Z",
+            "cvss": [
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 7.5,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                    "source": "NVD"
+                },
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 7.5,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                    "source": "Amazon Linux"
+                }
+            ]
+        }
+    },
+    {
+        "severity": "high",
+        "related": [
+            "ALAS2023-2023-321"
+        ],
+        "references": [
+            "https://web.mit.edu/kerberos/www/advisories/"
+        ],
+        "created": "2023-08-16T15:15:11Z",
+        "description": "kdc/do_tgs_req.c in MIT Kerberos 5 (aka krb5) 1.21 before 1.21.2 has a double free that is reachable if an authenticated user can trigger an authorization-data handling failure. Incorrect data is copied from one ticket to another.",
+        "affects": [
+            {
+                "fixed_version": "0:1.21-3.amzn2023.0.3",
+                "installed_version": "pkg:rpm/amazon/krb5-libs@1.20.1-8.amzn2023.0.2?arch=x86_64&distro=2023&epoch=0"
+            }
+        ],
+        "id": "CVE-2023-39975",
+        "source": "https://nvd.nist.gov/vuln/detail/CVE-2023-39975",
+        "updated": "2023-09-15T14:15:10Z",
+        "properties": {
+            "epss": null,
+            "cwes": [
+                415
+            ],
+            "cvss": [
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 8.8000001907,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+                    "source": "NVD"
+                },
+                {
+                    "severity": "low",
+                    "cvss_3_base_score": 3.7000000477,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N",
+                    "source": "Amazon Linux"
+                }
+            ]
+        }
+    },
+    {
+        "severity": "high",
+        "related": [
+            "ALAS2023-2023-270"
+        ],
+        "references": [
+            "https://hackerone.com/reports/1913733",
+            "https://support.apple.com/kb/HT213843",
+            "https://support.apple.com/kb/HT213844",
+            "https://support.apple.com/kb/HT213845",
+            "https://security.gentoo.org/glsa/202310-12"
+        ],
+        "created": "2023-05-26T21:15:10Z",
+        "description": "A use after free vulnerability exists in curl <v8.1.0 in the way libcurl offers a feature to verify an SSH server's public key using a SHA 256 hash. When this check fails, libcurl would free the memory for the fingerprint before it returns an error message containing the (now freed) hash. This flaw risks inserting sensitive heap-based data into the error message that might be shown to users or otherwise get leaked and revealed.",
+        "affects": [
+            {
+                "fixed_version": "0:8.0.1-1.amzn2023.0.1",
+                "installed_version": "pkg:rpm/amazon/curl-minimal@7.88.1-1.amzn2023.0.1?arch=x86_64&distro=2023&epoch=0"
+            },
+            {
+                "fixed_version": "0:8.0.1-1.amzn2023.0.1",
+                "installed_version": "pkg:rpm/amazon/libcurl-minimal@7.88.1-1.amzn2023.0.1?arch=x86_64&distro=2023&epoch=0"
+            },
+            {
+                "fixed_version": "0:8.0.1-1.amzn2023.0.1",
+                "installed_version": "pkg:rpm/amazon/curl@7.88.1-1.amzn2023.0.1?arch=x86_64&distro=2023&epoch=0"
+            }
+        ],
+        "id": "CVE-2023-28319",
+        "source": "https://nvd.nist.gov/vuln/detail/CVE-2023-28319",
+        "updated": "2023-10-20T18:42:56Z",
+        "properties": {
+            "exploit_available": true,
+            "epss": 0.00112,
+            "cwes": [
+                416
+            ],
+            "exploit_last_seen_in_public": "2024-01-09T23:40:13Z",
+            "cvss": [
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 7.5,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+                    "source": "NVD"
+                },
+                {
+                    "severity": "medium",
+                    "cvss_3_base_score": 5.9000000954,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+                    "source": "Amazon Linux"
+                }
+            ]
+        }
+    },
+    {
+        "severity": "high",
+        "related": [
+            "ALAS2023-2023-359"
+        ],
+        "references": [
+            "https://access.redhat.com/errata/RHSA-2023:5455",
+            "https://security.gentoo.org/glsa/202310-03",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/4DBUQRRPB47TC3NJOUIBVWUGFHBJAFDL/",
+            "https://www.qualys.com/cve-2023-4911/",
+            "https://www.qualys.com/2023/10/03/cve-2023-4911/looney-tunables-local-privilege-escalation-glibc-ld-so.txt",
+            "https://www.debian.org/security/2023/dsa-5514",
+            "https://access.redhat.com/security/cve/CVE-2023-4911",
+            "https://bugzilla.redhat.com/show_bug.cgi?id=2238352",
+            "https://access.redhat.com/errata/RHSA-2023:5453",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/DFG4P76UHHZEWQ26FWBXG76N2QLKKPZA/",
+            "https://access.redhat.com/errata/RHSA-2024:0033",
+            "https://access.redhat.com/errata/RHSA-2023:5454",
+            "https://access.redhat.com/errata/RHSA-2023:5476",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/NDAQWHTSVOCOZ5K6KPIWKRT3JX4RTZUR/"
+        ],
+        "created": "2023-10-03T18:15:10Z",
+        "description": "A buffer overflow was discovered in the GNU C Library's dynamic loader ld.so while processing the GLIBC_TUNABLES environment variable. This issue could allow a local attacker to use maliciously crafted GLIBC_TUNABLES environment variables when launching binaries with SUID permission to execute code with elevated privileges.",
+        "affects": [
+            {
+                "fixed_version": "0:2.34-52.amzn2023.0.6",
+                "installed_version": "pkg:rpm/amazon/glibc-minimal-langpack@2.34-52.amzn2023.0.2?arch=x86_64&distro=2023&epoch=0"
+            },
+            {
+                "fixed_version": "0:2.34-52.amzn2023.0.6",
+                "installed_version": "pkg:rpm/amazon/glibc@2.34-52.amzn2023.0.2?arch=x86_64&distro=2023&epoch=0"
+            },
+            {
+                "fixed_version": "0:2.34-52.amzn2023.0.6",
+                "installed_version": "pkg:rpm/amazon/glibc-common@2.34-52.amzn2023.0.2?arch=x86_64&distro=2023&epoch=0"
+            }
+        ],
+        "id": "CVE-2023-4911",
+        "source": "https://nvd.nist.gov/vuln/detail/CVE-2023-4911",
+        "updated": "2024-01-03T15:15:09Z",
+        "properties": {
+            "cisa_kev_date_added": "2023-11-21T00:00:00Z",
+            "exploit_available": true,
+            "epss": 0.0171399992,
+            "cisa_kev_date_due": "2023-12-12T00:00:00Z",
+            "cwes": [
+                787,
+                122
+            ],
+            "exploit_last_seen_in_public": "2024-01-10T01:40:59Z",
+            "cvss": [
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 7.8000001907,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+                    "source": "NVD"
+                },
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 8.1999998093,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:R/S:C/C:H/I:H/A:H",
+                    "source": "Amazon Linux"
+                }
+            ]
+        }
+    },
+    {
+        "severity": "critical",
+        "related": [
+            "ALAS2023-2023-246"
+        ],
+        "references": [
+            "https://security.gentoo.org/glsa/202309-14",
+            "https://bugs.gentoo.org/882521",
+            "https://lists.debian.org/debian-lts-announce/2023/01/msg00034.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/V67OO2UUQAUJS3IK4JZPF6F3LUCBU6IS/"
+        ],
+        "created": "2022-11-22T02:15:11Z",
+        "description": "In libarchive before 3.6.2, the software does not check for an error after calling calloc function that can return with a NULL pointer if the function fails, which leads to a resultant NULL pointer dereference. NOTE: the discoverer cites this CWE-476 remark but third parties dispute the code-execution impact: \"In rare circumstances, when NULL is equivalent to the 0x0 memory address and privileged code can access it, then writing or reading memory is possible, which may lead to code execution.\"",
+        "affects": [
+            {
+                "fixed_version": "0:3.5.3-2.amzn2023.0.3",
+                "installed_version": "pkg:rpm/amazon/libarchive@3.5.3-2.amzn2023.0.2?arch=x86_64&distro=2023&epoch=0"
+            }
+        ],
+        "id": "CVE-2022-36227",
+        "source": "https://nvd.nist.gov/vuln/detail/CVE-2022-36227",
+        "updated": "2023-11-07T03:49:34Z",
+        "properties": {
+            "exploit_available": true,
+            "epss": 0.0049200002,
+            "cwes": [
+                476
+            ],
+            "exploit_last_seen_in_public": "2024-01-10T00:41:03Z",
+            "cvss": [
+                {
+                    "severity": "critical",
+                    "cvss_3_base_score": 9.8000001907,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                    "source": "NVD"
+                },
+                {
+                    "severity": "low",
+                    "cvss_3_base_score": 5.9000000954,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                    "source": "Amazon Linux"
+                }
+            ]
+        }
+    },
+    {
+        "severity": "high",
+        "related": [
+            "ALAS2023-2023-193"
+        ],
+        "references": [
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/36NBD5YLJXXEDZLDGNFCERWRYJQ6LAQW/",
+            "https://hackerone.com/reports/1892351",
+            "https://security.gentoo.org/glsa/202310-12"
+        ],
+        "created": "2023-03-30T20:15:07Z",
+        "description": "A path traversal vulnerability exists in curl <8.0.0 SFTP implementation causes the tilde (~) character to be wrongly replaced when used as a prefix in the first path element, in addition to its intended use as the first element to indicate a path relative to the user's home directory. Attackers can exploit this flaw to bypass filtering or execute arbitrary code by crafting a path like /~2/foo while accessing a server with a specific user.",
+        "affects": [
+            {
+                "fixed_version": "0:8.0.1-1.amzn2023",
+                "installed_version": "pkg:rpm/amazon/curl-minimal@7.88.1-1.amzn2023.0.1?arch=x86_64&distro=2023&epoch=0"
+            },
+            {
+                "fixed_version": "0:8.0.1-1.amzn2023",
+                "installed_version": "pkg:rpm/amazon/libcurl-minimal@7.88.1-1.amzn2023.0.1?arch=x86_64&distro=2023&epoch=0"
+            },
+            {
+                "fixed_version": "0:8.0.1-1.amzn2023",
+                "installed_version": "pkg:rpm/amazon/curl@7.88.1-1.amzn2023.0.1?arch=x86_64&distro=2023&epoch=0"
+            }
+        ],
+        "id": "CVE-2023-27534",
+        "source": "https://nvd.nist.gov/vuln/detail/CVE-2023-27534",
+        "updated": "2023-11-07T04:09:59Z",
+        "properties": {
+            "exploit_available": true,
+            "epss": 0.00134,
+            "cwes": [
+                22
+            ],
+            "exploit_last_seen_in_public": "2024-01-10T00:37:07Z",
+            "cvss": [
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 8.8000001907,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+                    "source": "NVD"
+                },
+                {
+                    "severity": "medium",
+                    "cvss_3_base_score": 4.5,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:L/AC:H/PR:N/UI:R/S:U/C:L/I:L/A:L",
+                    "source": "Amazon Linux"
+                }
+            ]
+        }
+    },
+    {
+        "severity": "high",
+        "related": [
+            "ALAS2023-2023-292"
+        ],
+        "references": [
+            "https://access.redhat.com/security/cve/CVE-2023-4156",
+            "https://bugzilla.redhat.com/show_bug.cgi?id=2215930"
+        ],
+        "created": "2023-09-25T18:15:11Z",
+        "description": "A heap out-of-bounds read flaw was found in builtin.c in the gawk package. This issue may lead to a crash and could be used to read sensitive information.",
+        "affects": [
+            {
+                "fixed_version": "0:5.1.0-3.amzn2023.0.3",
+                "installed_version": "pkg:rpm/amazon/gawk@5.1.0-3.amzn2023.0.2?arch=x86_64&distro=2023&epoch=0"
+            }
+        ],
+        "id": "CVE-2023-4156",
+        "source": "https://nvd.nist.gov/vuln/detail/CVE-2023-4156",
+        "updated": "2023-11-07T04:22:11Z",
+        "properties": {
+            "exploit_available": true,
+            "epss": null,
+            "cwes": [
+                125
+            ],
+            "exploit_last_seen_in_public": "2024-01-04T07:39:56Z",
+            "cvss": [
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 7.0999999046,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:N/A:H",
+                    "source": "NVD"
+                },
+                {
+                    "severity": "low",
+                    "cvss_3_base_score": 3.2999999523,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:L",
+                    "source": "Amazon Linux"
+                }
+            ]
+        }
+    },
+    {
+        "severity": "high",
+        "related": [
+            "ALAS2023-2023-286"
+        ],
+        "created": "2023-07-18T14:15:12Z",
+        "description": "Integer overflow vulnerability in pcre2test before 10.41 allows attackers to cause a denial of service or other unspecified impacts via negative input.",
+        "affects": [
+            {
+                "fixed_version": "0:10.40-1.amzn2023.0.3",
+                "installed_version": "pkg:rpm/amazon/pcre2-syntax@10.40-1.amzn2023.0.2?arch=noarch&distro=2023&epoch=0"
+            },
+            {
+                "fixed_version": "0:10.40-1.amzn2023.0.3",
+                "installed_version": "pkg:rpm/amazon/pcre2@10.40-1.amzn2023.0.2?arch=x86_64&distro=2023&epoch=0"
+            }
+        ],
+        "id": "CVE-2022-41409",
+        "source": "https://nvd.nist.gov/vuln/detail/CVE-2022-41409",
+        "updated": "2023-07-27T03:46:09Z",
+        "properties": {
+            "epss": null,
+            "cwes": [
+                190
+            ],
+            "cvss": [
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 7.5,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                    "source": "NVD"
+                },
+                {
+                    "severity": "low",
+                    "cvss_3_base_score": 3.2999999523,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:L",
+                    "source": "Amazon Linux"
+                }
+            ]
+        }
+    },
+    {
+        "severity": "high",
+        "related": [
+            "ALAS2023-2023-244"
+        ],
+        "references": [
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/QYLDK6ODVC4LJSDULLX6Q2YHTFOWABCN/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/C63HAGVLQA6FJNDCHR7CNZZL6VSLILB2/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JEHRBBYYTPA4DETOM5XAKGCP37NUTLOA/"
+        ],
+        "created": "2023-03-31T20:15:07Z",
+        "description": "A vulnerability was found in zstd v1.4.10, where an attacker can supply empty string as an argument to the command line tool to cause buffer overrun.",
+        "affects": [
+            {
+                "fixed_version": "0:1.5.2-1.amzn2023.0.3",
+                "installed_version": "pkg:rpm/amazon/libzstd@1.5.2-1.amzn2023.0.2?arch=x86_64&distro=2023&epoch=0"
+            },
+            {
+                "fixed_version": "0:1.5.2-1.amzn2023.0.3",
+                "installed_version": "pkg:rpm/amazon/zstd@1.5.2-1.amzn2023.0.2?arch=x86_64&distro=2023&epoch=0"
+            }
+        ],
+        "id": "CVE-2022-4899",
+        "source": "https://nvd.nist.gov/vuln/detail/CVE-2022-4899",
+        "updated": "2023-11-07T03:59:16Z",
+        "properties": {
+            "exploit_available": true,
+            "epss": null,
+            "cwes": [
+                400
+            ],
+            "exploit_last_seen_in_public": "2024-01-10T02:31:58Z",
+            "cvss": [
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 7.5,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                    "source": "NVD"
+                },
+                {
+                    "severity": "medium",
+                    "cvss_3_base_score": 4.6999998093,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:N/I:N/A:H",
+                    "source": "Amazon Linux"
+                }
+            ]
+        }
+    },
+    {
+        "severity": "high",
+        "related": [
+            "ALAS2023-2023-220"
+        ],
+        "references": [
+            "https://support.apple.com/kb/HT213843",
+            "https://lists.debian.org/debian-lts-announce/2023/12/msg00004.html",
+            "https://support.apple.com/kb/HT213844",
+            "https://support.apple.com/kb/HT213845"
+        ],
+        "created": "2023-04-14T01:15:08Z",
+        "description": "ncurses before 6.4 20230408, when used by a setuid application, allows local users to trigger security-relevant memory corruption via malformed data in a terminfo database file that is found in $HOME/.terminfo or reached via the TERMINFO or TERM environment variable.",
+        "affects": [
+            {
+                "fixed_version": "0:6.2-4.20200222.amzn2023.0.4",
+                "installed_version": "pkg:rpm/amazon/ncurses-base@6.2-4.20200222.amzn2023.0.3?arch=noarch&distro=2023&epoch=0"
+            },
+            {
+                "fixed_version": "0:6.2-4.20200222.amzn2023.0.4",
+                "installed_version": "pkg:rpm/amazon/ncurses-libs@6.2-4.20200222.amzn2023.0.3?arch=x86_64&distro=2023&epoch=0"
+            },
+            {
+                "fixed_version": "0:6.2-4.20200222.amzn2023.0.4",
+                "installed_version": "pkg:rpm/amazon/ncurses@6.2-4.20200222.amzn2023.0.3?arch=x86_64&distro=2023&epoch=0"
+            }
+        ],
+        "id": "CVE-2023-29491",
+        "source": "https://nvd.nist.gov/vuln/detail/CVE-2023-29491",
+        "updated": "2023-12-03T20:15:07Z",
+        "properties": {
+            "exploit_available": true,
+            "epss": null,
+            "cwes": [
+                787
+            ],
+            "exploit_last_seen_in_public": "2024-01-10T00:37:07Z",
+            "cvss": [
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 7.8000001907,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+                    "source": "NVD"
+                },
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 7.8000001907,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+                    "source": "Amazon Linux"
+                }
+            ]
+        }
+    },
+    {
+        "severity": "high",
+        "related": [
+            "ALAS2023-2023-193"
+        ],
+        "references": [
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/36NBD5YLJXXEDZLDGNFCERWRYJQ6LAQW/",
+            "https://lists.debian.org/debian-lts-announce/2023/04/msg00025.html",
+            "https://hackerone.com/reports/1891474",
+            "https://security.gentoo.org/glsa/202310-12"
+        ],
+        "created": "2023-03-30T20:15:07Z",
+        "description": "A vulnerability in input validation exists in curl <8.0 during communication using the TELNET protocol may allow an attacker to pass on maliciously crafted user name and \"telnet options\" during server negotiation. The lack of proper input scrubbing allows an attacker to send content or perform option negotiation without the application's intent. This vulnerability could be exploited if an application allows user input, thereby enabling attackers to execute arbitrary code on the system.",
+        "affects": [
+            {
+                "fixed_version": "0:8.0.1-1.amzn2023",
+                "installed_version": "pkg:rpm/amazon/curl-minimal@7.88.1-1.amzn2023.0.1?arch=x86_64&distro=2023&epoch=0"
+            },
+            {
+                "fixed_version": "0:8.0.1-1.amzn2023",
+                "installed_version": "pkg:rpm/amazon/libcurl-minimal@7.88.1-1.amzn2023.0.1?arch=x86_64&distro=2023&epoch=0"
+            },
+            {
+                "fixed_version": "0:8.0.1-1.amzn2023",
+                "installed_version": "pkg:rpm/amazon/curl@7.88.1-1.amzn2023.0.1?arch=x86_64&distro=2023&epoch=0"
+            }
+        ],
+        "id": "CVE-2023-27533",
+        "source": "https://nvd.nist.gov/vuln/detail/CVE-2023-27533",
+        "updated": "2023-11-07T04:09:58Z",
+        "properties": {
+            "exploit_available": true,
+            "epss": null,
+            "cwes": [
+                75,
+                74
+            ],
+            "exploit_last_seen_in_public": "2024-01-10T00:37:07Z",
+            "cvss": [
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 8.8000001907,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+                    "source": "NVD"
+                },
+                {
+                    "severity": "medium",
+                    "cvss_3_base_score": 4.5,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:L/I:L/A:L",
+                    "source": "Amazon Linux"
+                }
+            ]
+        }
+    },
+    {
+        "severity": "high",
+        "related": [
+            "ALAS2023-2023-407"
+        ],
+        "references": [
+            "https://access.redhat.com/security/cve/CVE-2023-5156",
+            "https://sourceware.org/git/?p=glibc.git;a=commitdiff;h=ec6b95c3303c700eb89eebeda2d7264cc184a796",
+            "https://bugzilla.redhat.com/show_bug.cgi?id=2240541",
+            "https://sourceware.org/bugzilla/show_bug.cgi?id=30884"
+        ],
+        "created": "2023-09-25T16:15:15Z",
+        "description": "A flaw was found in the GNU C Library. A recent fix for CVE-2023-4806 introduced the potential for a memory leak, which may result in an application crash.",
+        "affects": [
+            {
+                "fixed_version": "0:2.34-52.amzn2023.0.7",
+                "installed_version": "pkg:rpm/amazon/glibc-minimal-langpack@2.34-52.amzn2023.0.2?arch=x86_64&distro=2023&epoch=0"
+            },
+            {
+                "fixed_version": "0:2.34-52.amzn2023.0.7",
+                "installed_version": "pkg:rpm/amazon/glibc@2.34-52.amzn2023.0.2?arch=x86_64&distro=2023&epoch=0"
+            },
+            {
+                "fixed_version": "0:2.34-52.amzn2023.0.7",
+                "installed_version": "pkg:rpm/amazon/glibc-common@2.34-52.amzn2023.0.2?arch=x86_64&distro=2023&epoch=0"
+            }
+        ],
+        "id": "CVE-2023-5156",
+        "source": "https://nvd.nist.gov/vuln/detail/CVE-2023-5156",
+        "updated": "2023-12-15T18:18:02Z",
+        "properties": {
+            "exploit_available": true,
+            "epss": null,
+            "cwes": [
+                401
+            ],
+            "exploit_last_seen_in_public": "2024-01-09T04:32:08Z",
+            "cvss": [
+                {
+                    "severity": "high",
+                    "cvss_3_base_score": 7.5,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                    "source": "NVD"
+                },
+                {
+                    "severity": "low",
+                    "cvss_3_base_score": 3.7000000477,
+                    "cvss_3_base_vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L",
+                    "source": "Amazon Linux"
+                }
+            ]
+        }
+    }
+]
+[Container] 2024/01/11 12:24:08.579616 Phase complete: BUILD State: SUCCEEDED
+[Container] 2024/01/11 12:24:08.579636 Phase context status code:  Message: 
+[Container] 2024/01/11 12:24:08.614757 Entering phase POST_BUILD
+[Container] 2024/01/11 12:24:08.615303 Running command export BUILD_URL=$CODEBUILD_BUILD_URL
+[Container] 2024/01/11 12:24:08.626918 Phase complete: POST_BUILD State: SUCCEEDED
+[Container] 2024/01/11 12:24:08.626942 Phase context status code:  Message: 
